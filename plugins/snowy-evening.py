@@ -1,39 +1,25 @@
 from util import hook, http, text
 import json, urllib2
 import re
-from bs4 import BeautifulSoup
 
 snowy_re = (r'(?:snowy-evening.com/)'
               '([-_a-zA-Z0-9/]+)', re.I)
 
-			  
-def stripStrongTags(text):
-	return text.replace("<strong>", "").replace("</strong>", "")
 
-			  
 @hook.regex(*snowy_re)
 def snowy(match, nick="", reply=""):
-	try:
-		
-		soup = http.get_soup("https://snowy-evening.com/" + match.group(1))
-		header = ''.join([unicode(tag) for tag in (soup.h2)]).replace("<span>Issue Details</span>", "")
-		print(tag for tag in soup.find_all('p'))
-		info = ''.join([unicode(tag) for tag in soup.find_all('p')[0]])
-		if info.isspace() or not info or info == "":
-			info = "No details found"
-		stuff = soup.find_all('li', {'id':'proj-current'})[-1]
-		owner, name = stuff.find_all('a')[-1]['href'].replace("https://snowy-evening.com/", '').split('/')
-		reply("Project %s by %s: Issue %s - %s" % (name, owner, header, text.truncate_str(info, 150)))
-		stats = soup.find_all('ul', {'id':'stats'}, text=True)
-		priority, number, type, status, age, name = soup.find_all('strong', text=True)[:6]
-		data = {
-		"priority" : stripStrongTags(''.join(priority)),
-		"number" : stripStrongTags(''.join(number)),
-		"type" : stripStrongTags(''.join(type)),
-		"status" : stripStrongTags(''.join(status)),
-		"age" : stripStrongTags(''.join(age)),
-		"name" : stripStrongTags(''.join(name))
-		}
-		reply("This issue has a priority of \x02{priority}\x02. It's age is \x02{age}\x02 and it is a \x02{type}\x02 and was created by \x02{name}\x02. It's status is \x02{status}\x02.".format(**data))	
-	except Exception:
-		raise
+    owner, name, id, blankSpace = match.group(1).split("/")
+    soup = http.get_soup("https://snowy-evening.com/%s/%s/%s" % (owner, name, id))
+
+    header = soup.find('section', {'class': 'container'}).header.h2(text=True)[1].split(" ", 1)[1]
+    reply("Project {} by {}: Issue #{}: {}".format(name, owner, id, text.truncate_str(header, 150)))
+    stats = soup.find('ul', {'id':'stats'}).find_all('strong')
+    if len(stats) == 6:
+        priority, number, type, status, age, assignee = [i.contents[0].lower() for i in stats]
+    else:
+        priority, number, type, status, age = [i.contents[0].lower() for i in stats]
+
+    if status == "assigned":
+        reply("This issue has a priority of \x02{}\x02. It's age is \x02{}\x02 and it is a \x02{}\x02. This issue is \x02{}\x02 to \x02{}\x02.".format(priority, age, type, status, assignee))
+    else:
+        reply("This issue has a priority of \x02{}\x02. It's age is \x02{}\x02 and it is a \x02{}\x02. It's status is \x02{}\x02.".format(priority, age, type, status))
