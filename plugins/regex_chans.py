@@ -6,15 +6,15 @@ from util import hook
 # If False, all channels without a setting will have regex disabled
 default_enabled = True
 
-db_ready = False
+db_ready = []
 
 
-def db_init(db):
+def db_init(db, conn):
     global db_ready
-    if not db_ready:
+    if conn not in db_ready:
         db.execute("CREATE TABLE IF NOT EXISTS regexchans(channel PRIMARY KEY, status)")
         db.commit()
-        db_ready = True
+        db_ready.append(conn)
 
 
 def get_status(db, channel):
@@ -49,7 +49,7 @@ def list_status(db):
 @hook.sieve
 def sieve_regex(bot, inp, func, kind, args):
     db = bot.get_db_connection(inp.conn)
-    db_init(db)
+    db_init(inp.conn.name, db)
     if kind == 'regex' and inp.chan.startswith("#") and func.__name__ != 'factoid':
         chanstatus = get_status(db, inp.chan)
         if chanstatus != "ENABLED" and (chanstatus == "DISABLED" or not default_enabled):
@@ -61,8 +61,8 @@ def sieve_regex(bot, inp, func, kind, args):
 
 
 @hook.command(permissions=["botcontrol"])
-def enableregex(inp, db=None, message=None, notice=None, chan=None, nick=None):
-    db_init(db)
+def enableregex(inp, db=None, message=None, notice=None, chan=None, nick=None, conn=None):
+    db_init(db, conn.name)
     inp = inp.strip().lower()
     if not inp:
         channel = chan
@@ -77,8 +77,8 @@ def enableregex(inp, db=None, message=None, notice=None, chan=None, nick=None):
 
 
 @hook.command(permissions=["botcontrol"])
-def disableregex(inp, db=None, message=None, notice=None, chan=None, nick=None):
-    db_init(db)
+def disableregex(inp, db=None, message=None, notice=None, chan=None, nick=None, conn=None):
+    db_init(conn.name, db)
     inp = inp.strip().lower()
     if not inp:
         channel = chan
@@ -93,8 +93,8 @@ def disableregex(inp, db=None, message=None, notice=None, chan=None, nick=None):
 
 
 @hook.command(permissions=["botcontrol"])
-def resetregex(inp, db=None, message=None, notice=None, chan=None, nick=None):
-    db_init(db)
+def resetregex(inp, db=None, message=None, notice=None, chan=None, nick=None, conn=None):
+    db_init(conn.name, db)
     inp = inp.strip().lower()
     if not inp:
         channel = chan
@@ -109,8 +109,8 @@ def resetregex(inp, db=None, message=None, notice=None, chan=None, nick=None):
 
 
 @hook.command(permissions=["botcontrol"])
-def regexstatus(inp, db=None, chan=None):
-    db_init(db)
+def regexstatus(inp, db=None, chan=None, conn=None):
+    db_init(conn.name, db)
     inp = inp.strip().lower()
     if not inp:
         channel = chan
@@ -123,6 +123,6 @@ def regexstatus(inp, db=None, chan=None):
 
 
 @hook.command(permissions=["botcontrol"])
-def listregex(inp, db=None):
-    db_init(db)
+def listregex(inp, db=None, conn=None):
+    db_init(conn.name, db)
     return list_status(db)
