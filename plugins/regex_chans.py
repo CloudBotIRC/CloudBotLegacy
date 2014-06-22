@@ -9,7 +9,7 @@ default_enabled = True
 db_ready = []
 
 
-def db_init(db, conn):
+def db_init(conn, db):
     global db_ready
     if conn not in db_ready:
         db.execute("CREATE TABLE IF NOT EXISTS regexchans(channel PRIMARY KEY, status)")
@@ -62,7 +62,7 @@ def sieve_regex(bot, inp, func, kind, args):
 
 @hook.command(permissions=["botcontrol"])
 def enableregex(inp, db=None, message=None, notice=None, chan=None, nick=None, conn=None):
-    db_init(db, conn.name)
+    db_init(conn.name, db)
     inp = inp.strip().lower()
     if not inp:
         channel = chan
