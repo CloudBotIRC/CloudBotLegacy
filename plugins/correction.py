@@ -17,6 +17,9 @@ def correction(match, input=None, conn=None, message=None):
     find = split[1]
     replace = split[2]
 
+    if not find and not find.isspace():
+        return u"Find must not be blank."
+
     for item in conn.history[input.chan].__reversed__():
         name, timestamp, msg = item
         if msg.startswith("s/"):
