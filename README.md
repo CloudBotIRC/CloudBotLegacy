@@ -1,5 +1,7 @@
 # CloudBot
 
+**Important: ** This repository is a *legacy* version of Cloudbot, whereas the [Refresh](http://github.com/CloudBotIRC/CloudBotRefresh/) version of CloudBot is a more maintained version, which runs on Python 3.4. This version is decapriated and new features are no longer added, so we suggest you update to CloudBotRefresh.
+
 ## About
 
 CloudBot is a Python IRC bot based on [Skybot](http://git.io/skybot) by [rmmh](http://git.io/rmmh).
