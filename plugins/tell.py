@@ -40,10 +40,10 @@ def tellinput(inp, input=None, notice=None, db=None, nick=None, conn=None):
         user_from, message, time, chan = tells[0]
         reltime = timesince.timesince(time)
 
-        reply = "{} sent you a message {} ago from {}: {}".format(user_from, reltime, chan,
+        reply = u"{} sent you a message {} ago from {}: {}".format(user_from, reltime, chan,
                                                                   message)
         if len(tells) > 1:
-            reply += " (+{} more, {}showtells to view)".format(len(tells) - 1, conn.conf["command_prefix"])
+            reply += u" (+{} more, {}showtells to view)".format(len(tells) - 1, conn.conf["command_prefix"])
 
         db.execute("delete from tell where user_to=lower(?) and message=?",
                    (nick, message))
