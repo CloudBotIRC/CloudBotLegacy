@@ -22,13 +22,22 @@ class TextGenerator(object):
         else:
             text = random.choice(self.templates)
 
-        # replace static variables in the template with provided values
+        # replace static tags in the template with provided values
+        
+        # eg: if the template contains the tag {age} and you provide the variable age when creating the textgen,
+        # instances of {age} will be replaced with the variable provided before the random stage
         if self.variables:
             for key, value in self.variables.items():
                 text = text.replace("{%s}" % key, value)
 
         # get a list of all text parts we need
         required_parts = TEMPLATE_RE.findall(text)
+        
+        # TODO: replace the simple logic here with a system that can allow multiple instances of the
+        # same tag to be handled
+        
+        # eg: if there are two instances of the tag {example} in the template, each one should be
+        # replaced with a random part instead of both getting the same part
 
         for required_part in required_parts:
             ppart = self.parts[required_part]
