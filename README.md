@@ -1,6 +1,6 @@
 # CloudBot
 
-**Important: ** This repository is a *legacy* version of Cloudbot, whereas the [Refresh](http://github.com/CloudBotIRC/CloudBotRefresh/) version of CloudBot is a more maintained version, which runs on Python 3.4. This version is decapriated and new features are no longer added, so we suggest you update to CloudBotRefresh.
+**Important: ** This repository is a *legacy* version of Cloudbot, whereas the [Refresh](http://github.com/CloudBotIRC/CloudBotRefresh/) version of CloudBot is a newer version, which runs on Python 3.4. This version is *discontinued* and *no longer maintained* by the core team, so we suggest you update to CloudBotRefresh.
 
 ## About
 
